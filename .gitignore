@@ -1,0 +1,12 @@
+# Credentials and local outputs must not enter the shared skill repository.
+.env
+.env.*
+*.token
+*.secret
+*credentials*
+outputs/
+*.tasks.json
+*.tasks.jsonl
+*.log
+.DS_Store
+Thumbs.db
