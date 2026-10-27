@@ -5,13 +5,15 @@ description: 根据指定 Teambition 项目的版本或迭代工单，生成面�
 
 # Teambition 玩家更新公告
 
-目标是基于指定项目和迭代的完整任务清单，输出可审核的玩家公告。查询遵循已安装的 `teambition` Skill 和当前 CLI Help；只读操作，不读取或显示任何凭证。
+目标是基于指定项目和迭代的完整任务清单，输出可审核的玩家公告。优先使用当前环境中已连接且获授权的 Teambition MCP 工具直接查询；不要求安装其他技能。`teambition` Skill 如已安装，可作为 CLI 用法的参考，不是前置条件；`teambition-statistics` 与本流程无关。只读操作，不读取或显示任何凭证。
+
+若 MCP 工具不可用，可在已安装并授权 `teambition-cli` 的环境中按当前叶子 Help 查询。`teambition-cli` 是 npm 包 `@tng/teambition-mcp-cli` 提供的命令，不是 npm 包名。两种查询方式均不可用时，说明缺少的连接或授权，让使用者自行完成配置；不要猜测工单，也不要把安装其他技能当作自动恢复步骤。
 
 ## 获取完整范围
 
 1. 从用户给出的项目名/ID 和版本/迭代名解析唯一项目和迭代。名称搜索可能是模糊匹配，核对返回的精确名称、项目 ID、迭代 ID；多个同名版本或热更迭代时请用户选定范围，不自行合并。
-2. 查询项目内该迭代的任务，保留迭代条件并取到 `nextPageToken` 为空。每条任务核对 `projectId` 和 `sprintId`，按 ID 去重，保留标题、备注、父任务、任务类型、`isDone`、状态名称及可用的自定义字段。当前 CLI 支持时可运行 [分页采集脚本](scripts/collect-sprint-tasks.ps1)，传入已核对的 ID 和工作区输出路径；脚本会校验范围。先读叶子 Help，契约不一致时按最新 Help 调整查询，不得删除迭代条件以换取成功。
-3. 当前执行环境无法使用用户 PowerShell 的 OAuth 身份时，解释身份边界，让用户在显示 `mcp2: yes` 的窗口执行同一只读采集脚本，并读取共享工作区输出。不要复制、读取或转存 OAuth/UserToken。
+2. 使用已授权的 MCP 工具查询项目内该迭代的任务，保留迭代条件并取到 `nextPageToken` 为空；需要状态历史、评论或字段定义时按当前工具文档继续只读查询。每条任务核对 `projectId` 和 `sprintId`，按 ID 去重，保留标题、备注、父任务、任务类型、`isDone`、状态名称及可用的自定义字段。使用 CLI 兜底时先读当前叶子 Help；可在 Windows PowerShell 运行[分页采集脚本](scripts/collect-sprint-tasks.ps1)，传入已核对的 ID 和工作区输出路径，脚本会校验范围。契约不一致时按当前文档调整查询，不得删除迭代条件以换取成功。
+3. 仅在 CLI 兜底场景中，若当前执行环境无法使用用户 PowerShell 的 OAuth 身份，解释身份边界，让用户在显示 `mcp2: yes` 的窗口执行同一只读采集脚本，并读取共享工作区输出。不要复制、读取或转存 OAuth/UserToken。
 
 ## 统计与选稿
 
